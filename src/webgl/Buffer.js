@@ -18,9 +18,9 @@ class Buffer {
 
   point(shader, attrib, size, type) {
     this.bind();
-    const attribLocation = shader.attrib[attrib];
-    this.gl.enableVertexAttribArray(attribLocation);
-    this.gl.vertexAttribPointer(attribLocation, size, type, false, 0, 0);
+    const attribLocation = shader.attribs[attrib];
+    this._gl.enableVertexAttribArray(attribLocation);
+    this._gl.vertexAttribPointer(attribLocation, size, type, false, 0, 0);
   }
 }
 

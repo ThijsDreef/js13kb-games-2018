@@ -13,11 +13,17 @@ class Shader {
     gl.attachShader(this.program, this.fs);
     gl.linkProgram(this.program);
 
-    if (Program.debug && !gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
-      warn(gl.getProgramInfoLog(this.program));
+
+    if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS) ) {
+      var info = gl.getProgramInfoLog(this.program);
+      throw new Error('Could not compile WebGL this.program. \n\n' + info);
     }
 
     this.grabParameters();
+  }
+
+  bind() {
+    this._gl.useProgram(this.program);
   }
 
   uploadInt(data, name) {
@@ -52,22 +58,22 @@ class Shader {
     }
     this.attribs = [];
     for (let i = 0; i < this.rawAttribs.length; i++) {
-      this.attribs[this.rawAttribs[i]] = (this._gl.getAttrib(this.program, this.rawAttribs[i]));
+      this.attribs[this.rawAttribs[i]] = (this._gl.getAttribLocation(this.program, this.rawAttribs[i]));
     }
   }
 
-  compileShader(gl, shader, code){
+  compileShader(gl, shader, code) {
     gl.shaderSource(shader, code);
     gl.compileShader(shader);
 
-    if (Program.debug && !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      warn(gl.getShaderInfoLog(shader));
-      warn(formatCode(code));
-      return false;
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      alert(gl.getShaderInfoLog(shader));
+      return null;
     }
 
     return true;
   }
+
 }
 
 export default Shader;
