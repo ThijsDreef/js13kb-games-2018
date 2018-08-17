@@ -61,19 +61,6 @@ class CubeGeometry {
   getBuffer() {
     return this._buffer;
   }
-
-  createEdges(translation) {
-    return [
-      [translation[0] - 1, translation[1] - 1, translation[2] - 1],
-      [1 + translation[0], 1 + translation[1], translation[2] - 1],
-      [1 + translation[0], translation[1] - 1, translation[2] - 1],
-      [1 + translation[0], 1 + translation[1], 1 + translation[2]],
-      [translation[0] - 1, 1 + translation[1], 1 + translation[2]],
-      [translation[0] - 1, translation[1] - 1, 1 + translation[2]],
-      [translation[0] - 1, 1 + translation[1], translation[2] - 1],
-      [1 + translation[0], translation[1] - 1, 1 + translation[2]]
-    ]
-  }
 }
 
 export default CubeGeometry;

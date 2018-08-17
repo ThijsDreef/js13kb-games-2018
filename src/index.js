@@ -14,7 +14,7 @@ canvas.style = {};
 document.body.style = 'padding: 0; margin: 0; overflow: hidden';
 
 let matrix = new Matrix();
-matrix.translate([0, 0, -2]);
+matrix.translate([0, 0, -4]);
 
 matrix = matrix.rotateY(1.8);
 const gl = canvas.getContext("webgl", {preserveDrawingBuffer: true});
@@ -23,8 +23,8 @@ console.log(shader);
 gl.enable(gl.DEPTH_TEST);
 const positions = [];
 positions.push([0, 0, 0]);
-// for (let i = 0; i < 1; i ++)
-  // positions.push([(Math.random() * 2 - 1) * 3, (Math.random() * 2 - 1) * 3, (Math.random() * 2 - 1) * 3]);
+ for (let i = 0; i < 100; i ++)
+   positions.push([(Math.random() * 2 - 1) * 10, (Math.random() * 2 - 1) * 10, (Math.random() * 2 - 1) * 10]);
 
 const cubeBuffer = new CubeGeometry(gl, positions);
 
@@ -46,7 +46,7 @@ function draw() {
   matrix = matrix.rotateY(i);
   matrix = matrix.rotateX(i);
 
-  matrix = matrix.translate([0, 0, -25]);
+  matrix = matrix.translate([0, 0, -15 + 30 * Math.sin(i)]);
   matrix = p.multiply(matrix);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   shader.bind();
