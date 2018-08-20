@@ -1,6 +1,10 @@
 class Matrix {
   constructor() {
     this.m = [];
+    this.identity();
+  }
+
+  identity() {
     for (let i = 0 ; i < 16; i ++)
       this.m.push(0);
     for (let i = 0; i < 16; i += 5)
