@@ -24,12 +24,12 @@ matrix.translate([0, 0, -4]);
 
 matrix = matrix.rotateY(1.8);
 const gl = canvas.getContext("webgl", {preserveDrawingBuffer: true});
-const shader = new Shader(gl, frag, vert, {attribs: ['aPosition'], uniforms: ['uCamera']});
+const shader = new Shader(gl, frag, vert, {attribs: ['aPosition'], uniforms: ['uCamera', 'cameraPos']});
 gl.enable(gl.DEPTH_TEST);
 const positions = [];
 
  for (let i = 0; i < 100; i ++)
-   positions.push([Math.floor((Math.random() * 2 - 1) * 5), Math.floor((Math.random() * 2 - 1) * 2), Math.floor((Math.random() * 2 - 1) * 5)]);
+   positions.push([Math.floor((Math.random() * 2 - 1) * 5), -1, Math.floor((Math.random() * 2 - 1) * 5)]);
 
 const cubeBuffer = new CubeGeometry(gl, positions);
 
@@ -58,6 +58,8 @@ function draw() {
   
   shader.bind();
   shader.uploadMat4(matrix.m,'uCamera');
+  const a = controls.getPos();
+  shader.uploadVec3([-a[0], -a[1], -a[2]], 'cameraPos');
   
   cubeBuffer.getBuffer().bind();
   cubeBuffer.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);

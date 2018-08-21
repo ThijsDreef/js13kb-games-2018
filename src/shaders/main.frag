@@ -2,6 +2,8 @@ precision highp float;
 
 varying vec3 inputPos;
 
+uniform vec3 cameraPos;
+
 void main() {
-  gl_FragColor = vec4(inputPos, 1.);
+  gl_FragColor = clamp(length(inputPos - cameraPos) , 0., 1.) * vec4(inputPos, 1.);
 }
