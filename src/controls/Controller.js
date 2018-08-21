@@ -30,22 +30,21 @@ class Controller {
   }
   _pointerDownAndUpHandler(e) {
     this._lastX = e.clientX;
+    this._lastY = e.clientY;
   }
 
   _pointerHandler(e) {
-    this._rot[1] += ((e.clientX - this._lastX) / window.innerWidth) * 4;
+    this._rot[1] += ((e.clientX - this._lastX) / window.innerWidth) * 5;
+    this._rot[0] += ((e.clientY - this._lastY) / window.innerHeight) * 2;
     this._lastX = e.clientX;
+    this._lastY = e.clientY;
 
-  }
-
-  _lockHandler() {
-    if (!this._locked) {
-      this._canvas.requestPointerLock();
-    }
   }
 
   _clickHandler() {
-    this._lockHandler();
+	if (!this._locked) {
+      this._canvas.requestPointerLock();
+    }
   }
 
   _pointerLockHandler(e) {
@@ -54,6 +53,8 @@ class Controller {
 
   _mouseHandler(e) {
     this._rot[1] += -((e.movementX / window.innerWidth) * this._sensitivity);
+    this._rot[0] += -((e.movementY / window.innerHeight) * this._sensitivity);
+    
   }
 
   _keyBoardHandler(e) {
@@ -70,21 +71,15 @@ class Controller {
   }
 
   mobileMoveHandler() {
-    for (let i = 0; i < this._pointers.length; i++) {
-      // if (this._pointers[i].clientX < )
-    }
-  }
-
-  buttonHandler() {
-    this._pos[0] += (this._mobileMove[0] * Math.cos(this._rot[1]) - this._mobileMove[2] * Math.sin(this._rot[1]));
+	this._pos[0] += (this._mobileMove[0] * Math.cos(this._rot[1]) - this._mobileMove[2] * Math.sin(this._rot[1]));
     this._pos[1] += this._mobileMove[1];
     this._pos[2] += -this._mobileMove[0] * Math.sin(this._rot[1]) - this._mobileMove[2] * Math.cos(this._rot[1]);
-
-
-    const moveVector = [0, 0, 0];
+  }
+  
+  desktopMoveHandler() {
+	const moveVector = [0, 0, 0];
     for (let i = 0; i < this._down.length; i++) {
       const char = (!this._down[i]) ? i : 0;
-      // console.log(char);
       switch (char) {
         case 65:
         moveVector[0] -= 0.05;
@@ -108,6 +103,14 @@ class Controller {
     this._pos[2] += -moveVector[0] * Math.sin(this._rot[1]) - moveVector[2] * Math.cos(this._rot[1]);
   }
 
+  moveHandler() {
+	this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
+	if (this._mobile) this.mobileMoveHandler();
+	else this.desktopMoveHandler();
+
+
+  }
+
   _pointerUpHandler(e)  {
 
     if (e.pointerId === this._lastPointer.pointerId) {
@@ -118,6 +121,7 @@ class Controller {
 
   _setupEventListeners(canvas) {
     if (window.orientation === undefined) {
+	  this._mobile = false;
       document.addEventListener('pointerlockchange', this._pointerLockHandler.bind(this));
       canvas.addEventListener('click', this._clickHandler.bind(this));
       canvas.addEventListener('mousemove', this._mouseHandler.bind(this));
@@ -125,11 +129,10 @@ class Controller {
       document.addEventListener('keyup', this._keyBoardHandler.bind(this));
     }
     else {
+	  this._mobile = true;
       canvas.addEventListener('pointermove', this._pointerHandler.bind(this));
       canvas.addEventListener('pointerup', this._pointerDownAndUpHandler.bind(this));
       canvas.addEventListener('pointerdown', this._pointerDownAndUpHandler.bind(this));
-
-
       const div = document.querySelector('.control');
       div.addEventListener('pointerup', this._pointerUpHandler.bind(this));
       div.addEventListener('pointermove', this._dpadHandler.bind(this));

@@ -9,14 +9,14 @@ import frag from './shaders/main.frag';
 
 
 const canvas = document.querySelector('.c');
-const desktop = new Controller(canvas);
+const controls = new Controller(canvas);
 
 canvas.style['touch-action'] = 'none';
-console.log(canvas);
+
 canvas.width = window.innerWidth;
 
 canvas.height = window.innerHeight;
-// canvas.style = {};
+
 document.body.style = 'padding: 0; margin: 0; overflow: hidden';
 
 let matrix = new Matrix();
@@ -39,24 +39,30 @@ shader.bind();
 shader.uploadMat4(matrix.m,'uCamera');
 cubeBuffer.getBuffer().bind();
 cubeBuffer.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);
-
-let i = 0;
+const p = new Matrix();
+p.perspective(45, window.innerWidth / window.innerHeight, 0.001, 100);
+console.log(p);
 draw();
+
 function draw() {
-  desktop.buttonHandler();
-  matrix = new Matrix();
-  const p = new Matrix();
-  p.perspective(45, window.innerWidth / window.innerHeight, 0.001, 100);
-  i += 0.02;
-  matrix = matrix.translate(desktop.getPos());
-  matrix = matrix.rotateY(desktop.getRot()[1]);
+  controls.moveHandler();
+  matrix.identity();
+
+  matrix = matrix.rotateX(controls.getRot()[0]);
+  matrix = matrix.rotateY(controls.getRot()[1]);
+  matrix = matrix.translate(controls.getPos());
 
   matrix = p.multiply(matrix);
+  
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
   shader.bind();
   shader.uploadMat4(matrix.m,'uCamera');
+  
   cubeBuffer.getBuffer().bind();
   cubeBuffer.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);
+  
   gl.drawArrays(gl.TRIANGLES, 0, cubeBuffer._vertices.length / 3);
+  
   requestAnimationFrame(draw);
 }

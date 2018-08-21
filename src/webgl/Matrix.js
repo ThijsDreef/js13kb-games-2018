@@ -1,12 +1,14 @@
 class Matrix {
   constructor() {
     this.m = [];
+    for (let i = 0 ; i < 16; i ++)
+		this.m.push(0);
     this.identity();
   }
 
   identity() {
     for (let i = 0 ; i < 16; i ++)
-      this.m.push(0);
+      this.m[i] = 0;
     for (let i = 0; i < 16; i += 5)
       this.m[i] = 1;
   }
@@ -24,6 +26,7 @@ class Matrix {
     this.m[10] = -(zFar + zNear) / (zFar - zNear);
     this.m[11] = -1;
     this.m[14] = -(2 * zFar * zNear) / (zFar - zNear);
+    this.m[15] = 0;
   }
 
   multiply(m) {
@@ -38,29 +41,29 @@ class Matrix {
     for (let i = 0; i < 3; i++) {
       m.m[i + 12] = position[i];
     }
-    return m.multiply(this);
+    return this.multiply(m);
   }
 
   rotateY(radians) {
     let m = new Matrix();
     m.m[0] = Math.cos(radians);
-		m.m[2] = Math.sin(radians);
-		m.m[5] = 1;
-		m.m[8] = -Math.sin(radians);
-		m.m[10] = Math.cos(radians);
+	m.m[2] = Math.sin(radians);
+	m.m[5] = 1;
+	m.m[8] = -Math.sin(radians);
+	m.m[10] = Math.cos(radians);
     m.m[15] = 1;
-    return m.multiply(this);
+    return this.multiply(m);
   }
 
   rotateX(radians) {
     let m = new Matrix();
     m.m[0] = 1;
     m.m[5] = Math.cos(radians);
-		m.m[6] = -Math.sin(radians);
+	m.m[6] = -Math.sin(radians);
   	m.m[9] = Math.sin(radians);
   	m.m[10] = Math.cos(radians);
     m.m[15] = 1;
-    return m.multiply(this);
+    return this.multiply(m);
   }
 }
 
