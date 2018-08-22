@@ -2,6 +2,7 @@ import Buffer from './webgl/Buffer';
 import CubeGeometry from './webgl/CubeGeometry';
 import Shader from './webgl/Shader';
 import Matrix from './webgl/Matrix';
+import Physics from './physics/Physics';
 import Controller from './controls/Controller';
 
 import vert from './shaders/main.vert';
@@ -9,8 +10,8 @@ import frag from './shaders/main.frag';
 
 
 const canvas = document.querySelector('.c');
-const controls = new Controller(canvas);
 
+console.log(1.5 % 1);
 canvas.style['touch-action'] = 'none';
 
 canvas.width = window.innerWidth;
@@ -21,38 +22,20 @@ document.body.style = 'padding: 0; margin: 0; overflow: hidden';
 
 let matrix = new Matrix();
 matrix.translate([0, 0, -4]);
-
 matrix = matrix.rotateY(1.8);
+
 const gl = canvas.getContext("webgl", {preserveDrawingBuffer: true});
 const shader = new Shader(gl, frag, vert, {attribs: ['aPosition'], uniforms: ['uCamera', 'cameraPos']});
-gl.enable(gl.DEPTH_TEST);
-const positions = [];
-const grid = [];
-for (let i = 0; i < 10; i++) {
-  const subGrid = [];
-  for (let j = 0; j < 10; j++) {
-    subGrid.push(false);
-  }
-  grid.push(subGrid);
-}
-addLayerToGrid(grid, 0.2, -1);
-
-function addLayerToGrid(grid, thresHold, layer) {
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      if (grid[i][j] === false && Math.random() > thresHold) {
-        positions.push([i, layer, j]);
-        grid[i][j] = true;
-      }
-    }
-  }
-  if (layer < 2) addLayerToGrid(grid, 0, layer + 1);
-}
+const physics = new Physics();
+const controls = new Controller(canvas, physics);
+const positions = physics.generateTerrain(20, 20);
 const cubeBuffer = new CubeGeometry(gl, positions);
+const p = new Matrix();
+
+p.perspective(45, window.innerWidth / window.innerHeight, 0.001, 100);
 
 gl.clearColor(1, 1, 1, 1);
-const p = new Matrix();
-p.perspective(45, window.innerWidth / window.innerHeight, 0.001, 100);
+gl.enable(gl.DEPTH_TEST);
 
 draw();
 

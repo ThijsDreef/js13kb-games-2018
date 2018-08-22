@@ -1,5 +1,6 @@
 class Controller {
-  constructor(canvas) {
+  constructor(canvas, physics) {
+      this._physics = physics;
       this._pos = [0, 0, 0];
       this._rot = [0, 0, 0];
       this._setupEventListeners(canvas);
@@ -71,9 +72,22 @@ class Controller {
   }
 
   mobileMoveHandler() {
-	this._pos[0] += (this._mobileMove[0] * Math.cos(this._rot[1]) - this._mobileMove[2] * Math.sin(this._rot[1]));
-    this._pos[1] += this._mobileMove[1];
-    this._pos[2] += -this._mobileMove[0] * Math.sin(this._rot[1]) - this._mobileMove[2] * Math.cos(this._rot[1]);
+    const rotatedMoveVector = [this._mobileMove[0] * Math.cos(this._rot[1]) - this._mobileMove[2] * Math.sin(this._rot[1]), this._mobileMove[1], -this._mobileMove[0] * Math.sin(this._rot[1]) - this._mobileMove[2] * Math.cos(this._rot[1])];
+
+    const oldPos = this._pos.slice(0);
+
+    this._pos[0] += rotatedMoveVector[0];
+    this._pos[2] += rotatedMoveVector[2];
+
+    const hitTest = this._physics.testAgainstTerrain(this._pos, oldPos);
+    if (hitTest.hit) {
+      if (hitTest.collision) {
+        console.log(hitTest.collision[0], hitTest.collision[2]);
+        if (hitTest.collision[0] !== 0) this._pos[0] = oldPos[0];
+        if (hitTest.collision[1] !== 0) this._pos[2] = oldPos[2];
+        
+      }
+    }
   }
   
   desktopMoveHandler() {
@@ -82,25 +96,38 @@ class Controller {
       const char = (!this._down[i]) ? i : 0;
       switch (char) {
         case 65:
-        moveVector[0] -= 0.05;
+        moveVector[0] -= 0.025;
         break;
         case 87:
-        moveVector[2] += 0.05;
+        moveVector[2] += 0.025;
         break;
         case 83:
-        moveVector[2] -= 0.05;
+        moveVector[2] -= 0.025;
         break;
         case 68:
-        moveVector[0] += 0.05;
+        moveVector[0] += 0.025;
         break;
         default:
 
       }
 
     }
-    this._pos[0] += moveVector[0] * Math.cos(this._rot[1]) - moveVector[2] * Math.sin(this._rot[1]);
-    this._pos[1] += moveVector[1];
-    this._pos[2] += -moveVector[0] * Math.sin(this._rot[1]) - moveVector[2] * Math.cos(this._rot[1]);
+    const rotatedMoveVector = [moveVector[0] * Math.cos(this._rot[1]) - moveVector[2] * Math.sin(this._rot[1]), moveVector[1], -moveVector[0] * Math.sin(this._rot[1]) - moveVector[2] * Math.cos(this._rot[1])];
+    const oldPos = this._pos.slice(0);
+
+    this._pos[0] += rotatedMoveVector[0];
+    this._pos[2] += rotatedMoveVector[2];
+
+    const hitTest = this._physics.testAgainstTerrain(this._pos, oldPos);
+    if (hitTest.hit) {
+      if (hitTest.collision) {
+        // console.log(hitTest.collision[0], hitTest.collision[2]);
+        
+        if (hitTest.collision[0] !== 0) this._pos[0] = oldPos[0];
+        if (hitTest.collision[1] !== 0) this._pos[2] = oldPos[2];
+        
+      }
+    }
   }
 
   moveHandler() {
