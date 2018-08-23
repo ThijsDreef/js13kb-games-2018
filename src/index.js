@@ -32,7 +32,7 @@ const positions = physics.generateTerrain(20, 20);
 const cubeBuffer = new CubeGeometry(gl, positions);
 const p = new Matrix();
 
-p.perspective(45, window.innerWidth / window.innerHeight, 0.001, 100);
+p.perspective(45, window.innerWidth / window.innerHeight, 0.0001, 100);
 
 gl.clearColor(1, 1, 1, 1);
 gl.enable(gl.DEPTH_TEST);

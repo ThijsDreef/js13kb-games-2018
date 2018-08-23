@@ -77,8 +77,13 @@ class Controller {
     const oldPos = this._pos.slice(0);
 
     this._pos[0] += rotatedMoveVector[0];
+    this.moveDirection(oldPos);
     this._pos[2] += rotatedMoveVector[2];
+    this.moveDirection(oldPos);
 
+  }
+
+  moveDirection(oldPos) {
     const hitTest = this._physics.testAgainstTerrain(this._pos, oldPos);
     if (hitTest.hit) {
       if (hitTest.collision) {
@@ -116,26 +121,19 @@ class Controller {
     const oldPos = this._pos.slice(0);
 
     this._pos[0] += rotatedMoveVector[0];
+    this.moveDirection(oldPos);
     this._pos[2] += rotatedMoveVector[2];
+    this.moveDirection(oldPos);
 
-    const hitTest = this._physics.testAgainstTerrain(this._pos, oldPos);
-    if (hitTest.hit) {
-      if (hitTest.collision) {
-        // console.log(hitTest.collision[0], hitTest.collision[2]);
-        
-        if (hitTest.collision[0] !== 0) this._pos[0] = oldPos[0];
-        if (hitTest.collision[1] !== 0) this._pos[2] = oldPos[2];
-        
-      }
-    }
+    
+
+
   }
 
   moveHandler() {
-	this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
-	if (this._mobile) this.mobileMoveHandler();
-	else this.desktopMoveHandler();
-
-
+    this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
+    if (this._mobile) this.mobileMoveHandler();
+    else this.desktopMoveHandler();
   }
 
   _pointerUpHandler(e)  {
