@@ -25,7 +25,7 @@ matrix.translate([0, 0, -4]);
 matrix = matrix.rotateY(1.8);
 
 const gl = canvas.getContext("webgl", {preserveDrawingBuffer: true});
-const shader = new Shader(gl, frag, vert, {attribs: ['aPosition'], uniforms: ['uCamera', 'cameraPos']});
+const shader = new Shader(gl, frag, vert, {attribs: ['aPosition'], uniforms: ['uCamera', 'cameraPos', 'lightPositions', 'lightColors']});
 const physics = new Physics();
 const controls = new Controller(canvas, physics);
 const positions = physics.generateTerrain(20, 20);
@@ -47,14 +47,16 @@ function draw() {
   matrix = matrix.rotateX(controls.getRot()[0]);
   matrix = matrix.rotateY(controls.getRot()[1]);
   matrix = matrix.translate(a);
-
   matrix = p.multiply(matrix);
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   shader.bind();
   shader.uploadMat4(matrix.m,'uCamera');
-  shader.uploadVec3([-a[0], -a[1], -a[2]], 'cameraPos');
+  shader.uploadVec3([-a[0], -a[1] + 0.5, -a[2]], 'cameraPos');
+  shader.uploadVec3([0, 1, 1, 1, 0, 0, 1, 0.5, 0, 0.5, 0, 1], 'lightColors');
+  shader.uploadVec3([0, 1, 0, 2, 1, 0, 4, 1, 0, 6, 1, 0], 'lightPositions');
+
 
   cubeBuffer.getBuffer().bind();
   cubeBuffer.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);

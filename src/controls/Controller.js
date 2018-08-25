@@ -87,7 +87,6 @@ class Controller {
     const hitTest = this._physics.testAgainstTerrain(this._pos, oldPos);
     if (hitTest.hit) {
       if (hitTest.collision) {
-        console.log(hitTest.collision[0], hitTest.collision[2]);
         if (hitTest.collision[0] !== 0) this._pos[0] = oldPos[0];
         if (hitTest.collision[1] !== 0) this._pos[2] = oldPos[2];
         
@@ -131,7 +130,7 @@ class Controller {
   }
 
   moveHandler() {
-    this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
+    // this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
     if (this._mobile) this.mobileMoveHandler();
     else this.desktopMoveHandler();
   }
