@@ -9,6 +9,15 @@ class Physics {
         document.body.appendChild(this._p);
     }
 
+    testPlayerAgainstLights(player, lights) {
+        for (let i = 0; i < lights.length; i++) {
+            if (Math.abs(lights[i].pos[0] - player[0]) < 1.5)
+                if (Math.abs(lights[i].pos[2] - player[2]) < 1.5)
+                    return lights[i];
+        }
+        return null;
+    }
+
     generateTerrain(xSize, ySize) {
         const positions = [];
         this._terrain = [];
@@ -24,7 +33,7 @@ class Physics {
                     for (let j = 0; j < 3; j ++)
                         positions.push([x, j - 1, y + ((y === 0) ? -1 : 1)]);
                 }
-                this._terrain[x].push((Math.random() < 0.33));
+                this._terrain[x].push((Math.random() < 0.1));
                 if (this._terrain[x][y]) {
                     positions.push([x, 1, y]);
                     positions.push([x, 0, y]);

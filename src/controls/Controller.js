@@ -21,10 +21,16 @@ class Controller {
   _dpadHandler(e) {
     let x = e.clientX / this._controlHeight;
     let y = (e.clientY - this._controlHeight) / this._controlHeight;
+    x = Math.min(x, 1);
+    y = Math.max(y, 0);
     x -= 0.5;
     y -= 0.5;
-    this._mobileMove[0] = -x * 0.08;
-    this._mobileMove[2] = y * 0.08;
+    x *= 2;
+    y *= 2;
+    this._mobileMove[0] = -x * 0.025;
+    this._mobileMove[2] = y * 0.025;
+    this._mobileMove[0] = Math.min(Math.max(-0.025, this._mobileMove[0]), 0.025)
+    this._mobileMove[2] = Math.min(Math.max(-0.025, this._mobileMove[2]), 0.025)
     this._lastPointer = e;
 
 
@@ -130,7 +136,7 @@ class Controller {
   }
 
   moveHandler() {
-    // this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
+    this._rot[0] = Math.min(Math.max(-0.6, this._rot[0]), 0.9)
     if (this._mobile) this.mobileMoveHandler();
     else this.desktopMoveHandler();
   }
