@@ -20,7 +20,7 @@ canvas.height = window.innerHeight;
 document.body.style = 'padding: 0; margin: 0; overflow: hidden';
 
 const gl = canvas.getContext("webgl", {preserveDrawingBuffer: true});
-const shader = new Shader(gl, frag.replace(new RegExp('NR_OF_LIGHTS', 'g'), levels[0].lights.length), vert, {attribs: ['aPosition'], uniforms: ['uCamera', 'cameraPos', 'lightPositions', 'lightColors']});
+const shader = new Shader(gl, frag.replace(new RegExp('NR_OF_LIGHTS', 'g'), levels[0].lights.length), vert, {attribs: ['aPosition', 'aColor'], uniforms: ['range', 'uCamera', 'cameraPos', 'lightPositions', 'lightColors']});
 const physics = new Physics();
 const lights = new Lights(shader);
 const controls = new Controller(canvas, physics);
@@ -39,6 +39,9 @@ p.perspective(45, window.innerWidth / window.innerHeight, 0.0001, 100);
 gl.clearColor(1, 1, 1, 1);
 gl.enable(gl.DEPTH_TEST);
 
+let range = 0.7;
+let fluctate = 0;
+
 draw();
 
 function draw() {
@@ -56,10 +59,13 @@ function draw() {
   shader.bind();
   shader.uploadMat4(matrix.m,'uCamera');
   shader.uploadVec3([-a[0], -a[1] + 0.5, -a[2]], 'cameraPos');
+  shader.uploadFloat(range + fluctate, 'range');
   lights.updateShader();
 
   cubeBuffer.getBuffer().bind();
   cubeBuffer.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);
+  cubeBuffer.getColorBuffer().bind();
+  cubeBuffer.getColorBuffer().point(shader, 'aColor', 3, gl.FLOAT);
   gl.drawArrays(gl.TRIANGLES, 0, cubeBuffer._vertices.length / 3);
 
   requestAnimationFrame(draw);
