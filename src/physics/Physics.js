@@ -18,6 +18,33 @@ class Physics {
         return null;
     }
 
+    loadTerrain(data) {
+        const positions = [];
+        this._terrain = [];
+        for (let x = 0; x < data.grid.length; x++) {
+            this._terrain.push([]);
+            for (let y = 0; y < data.grid[x].length; y++) {
+                this._terrain[x].push(false);
+                if (x === 0 || x === data.grid.length - 1) {
+                    for (let j = 0; j < 3; j ++)
+                        positions.push([x + ((x === 0) ? -1 : 1), j - 1, y]);
+                }
+                if (y === 0 || y === data.grid[x].length - 1) {
+                    for (let j = 0; j < 3; j ++)
+                        positions.push([x, j - 1, y + ((y === 0) ? -1 : 1)]);
+                }
+                if (data.grid[x][y] === 0) {
+                    positions.push([x, -1, y]);
+                } else if (data.grid[x][y] === 1) {
+                    this._terrain[x][y] = true;
+                    for (let i = 0; i < 3; i++)
+                        positions.push([x, -1 + i, y]);
+                }
+            }
+        }
+        return positions;
+    }
+
     generateTerrain(xSize, ySize) {
         const positions = [];
         this._terrain = [];
