@@ -25,7 +25,8 @@ const physics = new Physics();
 const lights = new Lights(shader);
 const controls = new Controller(canvas, physics);
 const positions = physics.loadTerrain(levels[0]);
-const cubeBuffer = new CubeGeometry(gl, positions);
+const walls = new CubeGeometry(gl, positions.wall);
+const ground = new CubeGeometry(gl, positions.ground);
 
 for (let i = 0; i < levels[0].lights.length; i++) {
   lights.addLight(levels[0].lights[i]);
@@ -41,14 +42,25 @@ gl.enable(gl.DEPTH_TEST);
 
 let range = 0.7;
 let fluctate = 0;
+const fluctateRange = 0.05;
+let i = 0;
 
 draw();
 
+function drawCubeBuffer(cubeGeometry) {
+  cubeGeometry.getBuffer().bind();
+  cubeGeometry.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);
+  cubeGeometry.getColorBuffer().bind();
+  cubeGeometry.getColorBuffer().point(shader, 'aColor', 3, gl.FLOAT);
+  gl.drawArrays(gl.TRIANGLES, 0, cubeGeometry._vertices.length / 3);
+}
 function draw() {
+  i += 0.02;
+  fluctate = Math.cos(i) * fluctateRange;
   controls.moveHandler();
   matrix.identity();
   const a = controls.getPos();
-
+  
   matrix = matrix.rotateX(controls.getRot()[0]);
   matrix = matrix.rotateY(controls.getRot()[1]);
   matrix = matrix.translate(a);
@@ -61,12 +73,10 @@ function draw() {
   shader.uploadVec3([-a[0], -a[1] + 0.5, -a[2]], 'cameraPos');
   shader.uploadFloat(range + fluctate, 'range');
   lights.updateShader();
+  drawCubeBuffer(walls);
+  drawCubeBuffer(ground);
 
-  cubeBuffer.getBuffer().bind();
-  cubeBuffer.getBuffer().point(shader, 'aPosition', 3, gl.FLOAT);
-  cubeBuffer.getColorBuffer().bind();
-  cubeBuffer.getColorBuffer().point(shader, 'aColor', 3, gl.FLOAT);
-  gl.drawArrays(gl.TRIANGLES, 0, cubeBuffer._vertices.length / 3);
+
 
   requestAnimationFrame(draw);
 }

@@ -19,5 +19,6 @@ void main() {
     gl_FragColor += vec4(vec3(lightDistance) * lightColors[i], 1.);
   }
   gl_FragColor.xyz *= color;
+
   gl_FragColor.w = 1.;
 }

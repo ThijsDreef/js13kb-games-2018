@@ -19,7 +19,8 @@ class Physics {
     }
 
     loadTerrain(data) {
-        const positions = [];
+        const wall = [];
+        const ground = [];
         this._terrain = [];
         for (let x = 0; x < data.grid.length; x++) {
             this._terrain.push([]);
@@ -27,22 +28,22 @@ class Physics {
                 this._terrain[x].push(false);
                 if (x === 0 || x === data.grid.length - 1) {
                     for (let j = 0; j < 3; j ++)
-                        positions.push([x + ((x === 0) ? -1 : 1), j - 1, y]);
+                        wall.push([x + ((x === 0) ? -1 : 1), j - 1, y]);
                 }
                 if (y === 0 || y === data.grid[x].length - 1) {
                     for (let j = 0; j < 3; j ++)
-                        positions.push([x, j - 1, y + ((y === 0) ? -1 : 1)]);
+                        wall.push([x, j - 1, y + ((y === 0) ? -1 : 1)]);
                 }
                 if (data.grid[x][y] === 0) {
-                    positions.push([x, -1, y]);
+                    ground.push([x, -1, y]);
                 } else if (data.grid[x][y] === 1) {
                     this._terrain[x][y] = true;
-                    for (let i = 0; i < 3; i++)
-                        positions.push([x, -1 + i, y]);
+                    for (let i = 0; i < 2; i++)
+                        wall.push([x, i, y]);
                 }
             }
         }
-        return positions;
+        return {wall, ground};
     }
 
     generateTerrain(xSize, ySize) {
