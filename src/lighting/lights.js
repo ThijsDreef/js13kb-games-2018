@@ -6,9 +6,8 @@ class Lights {
     }
 
     addLight(light) {
-        console.log(light);
-        
-        this._lights.push(light);
+      light.position = light.from;
+      this._lights.push(light);
     }
 
     findById(id) {

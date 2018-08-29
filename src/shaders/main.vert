@@ -7,8 +7,9 @@ varying vec3 color;
 varying vec3 inputPos;
 
 uniform mat4 uCamera;
+uniform mat4 uModel;
 void main() {
   color = aColor;
-  inputPos = aPosition;
-  gl_Position = uCamera * vec4(aPosition, 1);
+  inputPos = (uModel * vec4(aPosition, 1)).xyz;
+  gl_Position = uCamera * uModel * vec4(aPosition, 1);
 }

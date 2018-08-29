@@ -1,14 +1,14 @@
 import Buffer from './Buffer';
 
 class CubeGeometry {
-  constructor(gl, positions) {
+  constructor(gl, positions, color) {
     this._gl = gl;
     this._buffer = new Buffer(gl, []);
     this._colorBuffer = new Buffer(gl, []);
-    this.setupBuffer(positions)
+    this.setupBuffer(positions, color)
   }
   //size problems? refractor this please....
-  setupBuffer(positions) {
+  setupBuffer(positions, color) {
     this._vertices = [];
     this._positions = positions;
     this._colors = [];
@@ -59,8 +59,10 @@ class CubeGeometry {
       )
     }
     for (let i = 0; i < this._vertices.length; i += 6 * 3) {
-      for (let j = 0; j < 2 * 3; j++)
-      this._colors.push(1, 1, 1);
+      for (let j = 0; j < 2 * 3; j++) {
+        if (color !== undefined) this._colors.push(color[0],color[1],color[2]);
+        else this._colors.push(1, 1, 1);
+      }
     }
     this._buffer.buffer(new Float32Array(this._vertices));
     this._colorBuffer.buffer(new Float32Array(this._colors));

@@ -1,7 +1,6 @@
 class Shader {
   constructor(gl, frag, vert, info) {
-    console.log(frag);
-    
+
     this._gl = gl;
     this.rawAttribs = info.attribs;
     this.rawUniforms = info.uniforms;

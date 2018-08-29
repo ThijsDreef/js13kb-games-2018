@@ -36,6 +36,16 @@ class Matrix {
     return out;
   }
 
+  scale(s) {
+    let m = new Matrix();
+    let j = 0;
+    for (let i = 0; i < 15; i += 5) {
+      m.m[i] = s[j];
+      j++;
+    }
+    return this.multiply(m);
+  }
+
   translate(position) {
     let m = new Matrix();
     for (let i = 0; i < 3; i++) {
