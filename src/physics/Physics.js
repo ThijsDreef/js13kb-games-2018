@@ -11,11 +11,11 @@ class Physics {
 
     testPlayerAgainstLights(player, lights) {
         for (let i = 0; i < lights.length; i++) {
-            if (Math.abs(lights[i].pos[0] - player[0]) < 1.5)
-                if (Math.abs(lights[i].pos[2] - player[2]) < 1.5)
-                    return lights[i];
+            if (Math.abs(lights[i].position[0] - player[0]) < 0.5)
+                if (Math.abs(lights[i].position[2] - player[2]) < 0.5)
+                   return true;
         }
-        return null;
+        return false;
     }
 
     loadTerrain(data) {
@@ -76,7 +76,6 @@ class Physics {
         const y = -Math.floor(0.5 + position[2]);
         const oldX = -Math.floor(0.5 + lastPosition[0]);
         const oldY = -Math.floor(0.5 + lastPosition[2]);
-        this._p.textContent = x + ' ' + y + ' ';
         if (x < 0 || y < 0 || x >= this._terrain.length || y >= this._terrain[x].length)
             return {hit: true, collision: [oldX - x, oldY - y]};
         else

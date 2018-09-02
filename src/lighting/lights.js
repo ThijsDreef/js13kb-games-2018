@@ -5,8 +5,14 @@ class Lights {
         this._needsUpdate = true;
     }
 
+    getLights() {
+        return this._lights;
+    }
+
     addLight(light) {
-      light.position = light.from;
+      light.position = light.positions[0].slice();
+      light.toNr = 1;
+      light.fromNr = 0;
       this._lights.push(light);
     }
 
@@ -26,12 +32,34 @@ class Lights {
         const colors = [];
         for (let i = 0; i < this._lights.length; i++) {
             if (this._lights === null) break;
+            this.updateLightPosition(this._lights[i]);
             positions.push(...this._lights[i].position);
             colors.push(...this._lights[i].color);
         }
         this._shader.uploadVec3(colors, 'lightColors');
         this._shader.uploadVec3(positions, 'lightPositions');
 
+    }
+
+    updateLightPosition(light) {
+        window.light = light;
+        let moved = false;
+        if (!(light.position[0] > light.positions[light.toNr][0] - 0.1 && light.position[0] < light.positions[light.toNr][0] + 0.1)) {
+            moved = true;
+            light.position[0] = this.lerp(light.position[0], light.positions[light.toNr][0], 0.01675)
+        }
+        if (!(light.position[2] > light.positions[light.toNr][2] - 0.1 && light.position[2] < light.positions[light.toNr][2] + 0.1)) {
+            moved = true;
+            light.position[2] = this.lerp(light.position[2], light.positions[light.toNr][2], 0.01675);
+        }
+        if (!moved) {
+            light.toNr++;
+            light.toNr = light.toNr % light.positions.length;
+        }
+    }
+
+    lerp(from, target, speed) {
+        return from + speed * (target - from);
     }
 }
 
