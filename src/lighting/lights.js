@@ -46,11 +46,11 @@ class Lights {
         let moved = false;
         if (!(light.position[0] > light.positions[light.toNr][0] - 0.1 && light.position[0] < light.positions[light.toNr][0] + 0.1)) {
             moved = true;
-            light.position[0] = this.lerp(light.position[0], light.positions[light.toNr][0], 0.01675)
+            light.position[0] = this.lerp(light.position[0], light.positions[light.toNr][0], 0.012375)
         }
         if (!(light.position[2] > light.positions[light.toNr][2] - 0.1 && light.position[2] < light.positions[light.toNr][2] + 0.1)) {
             moved = true;
-            light.position[2] = this.lerp(light.position[2], light.positions[light.toNr][2], 0.01675);
+            light.position[2] = this.lerp(light.position[2], light.positions[light.toNr][2], 0.012375);
         }
         if (!moved) {
             light.toNr++;

@@ -11,8 +11,8 @@ class Physics {
 
     testPlayerAgainstLights(player, lights) {
         for (let i = 0; i < lights.length; i++) {
-            if (Math.abs(lights[i].position[0] - player[0]) < 0.5)
-                if (Math.abs(lights[i].position[2] - player[2]) < 0.5)
+            if (Math.abs(lights[i].position[0] - player[0]) < 0.25)
+                if (Math.abs(lights[i].position[2] - player[2]) < 0.25)
                    return true;
         }
         return false;
