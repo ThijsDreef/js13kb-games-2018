@@ -54,6 +54,10 @@ class Controller {
     }
   }
 
+  releasePointer() {
+    document.exitPointerLock();
+  }
+
   _pointerLockHandler(e) {
     this._locked = !this._locked;
   }
@@ -184,6 +188,13 @@ class Controller {
 
   getPos() {
     return this._pos;
+  }
+
+  setPos(position) {
+    this._pos[0] = position[0];
+    this._pos[1] = position[1];
+    this._pos[2] = position[2];
+
   }
 
 }

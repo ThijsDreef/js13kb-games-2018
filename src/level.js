@@ -13,7 +13,6 @@ class Level {
         this._canvas = canvas;
         this._gl = gl;
         this._levels = levels;
-        this._boundPlay = this.play.bind(this);
         this._physics = new Physics();
         this.time = 0;
         this._fluctateRange = 0.05;
@@ -22,17 +21,22 @@ class Level {
         this._p.perspective(45, window.innerWidth / window.innerHeight, 0.01, 100);
         this._matrix = new Matrix();
         this._model = new Matrix();
-        
         this._controls = new Controller(canvas, this._physics);
+        this._setUpGameOver();
+
+        this._boundPlay = this.play.bind(this);
+        this._boundPlayLevel = this.playLevel.bind(this);
+        this._setupMenu();
     }
 
     playLevel(id) {
+        this._levelId = id;
         this._shader = new Shader(this._gl, frag.replace(new RegExp('NR_OF_LIGHTS', 'g'), this._levels[0].lights.length), vert, {attribs: ['aPosition', 'aColor'], uniforms: ['fluctate', 'uModel','range', 'uCamera', 'cameraPos', 'lightPositions', 'lightColors']});
         this._lights = new Lights(this._shader);
         this._positions = this._physics.loadTerrain(this._levels[id]);
         this._walls = new CubeGeometry(this._gl, this._positions.wall);
         this._ground = new CubeGeometry(this._gl, this._positions.ground);
-
+        this._controls.setPos(this._levels[id].playerPosition);
         for (let i = 0; i < this._levels[id].lights.length; i++) {
             this._lights.addLight(this._levels[id].lights[i]);
         }
@@ -55,6 +59,80 @@ class Level {
         this._gl.drawArrays(this._gl.TRIANGLES, 0, cubeGeometry._vertices.length / 3);
     }
 
+    _setupMenu() {
+        const div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.className = 'menu';
+        div.style.top = '0';
+        const title = document.createElement('h1');
+        title.textContent = 'Menu';
+        div.appendChild(title);
+        for (let i = 0; i < this._levels.length; i++) {
+            const button = document.createElement('button');
+            button.textContent = 'play level: ' + (i + 1);
+            button.addEventListener('click', ()=> {
+                this._boundPlayLevel(i)
+                this.closeMenu();
+            });
+            div.appendChild(button);
+        }
+        this._menu = div;
+    }
+
+    _setUpGameOver() {
+        const div = document.createElement('div');
+        const title = document.createElement('h1');
+        const replay = document.createElement('button');
+        const menu = document.createElement('button');
+        div.className = 'menu';
+        div.style.position = 'absolute';
+        div.style.top = '0';
+
+        title.textContent = 'Game Over';
+        div.appendChild(title);
+
+        replay.addEventListener('click', ()=>{
+            this.closeGameOver();
+            this.playLevel(this._levelId);
+
+        });
+        replay.textContent = 'replay';
+
+        menu.addEventListener('click', ()=>{
+            this.closeGameOver();
+            this.menu();
+        });
+
+        menu.textContent = 'menu';
+
+        div.appendChild(title);
+        div.appendChild(replay);
+        div.appendChild(menu);
+        
+
+        this._gameOver = div;
+    }
+
+    gameOver() {
+        this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+        this._controls.releasePointer();
+        document.body.appendChild(this._gameOver);
+    }
+
+    closeGameOver() {
+        document.body.removeChild(this._gameOver);
+    }
+
+    menu() {
+        this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+        this._controls.releasePointer();
+        document.body.appendChild(this._menu);
+    }
+
+    closeMenu() {
+        document.body.removeChild(this._menu);
+    }
+
     play() {
         this.time += 0.02;
         const fluctate = Math.cos(this.time) * this._fluctateRange;
@@ -67,7 +145,15 @@ class Level {
         this._matrix = this._matrix.translate(a);
         this._matrix = this._p.multiply(this._matrix);
         if (this._physics.testPlayerAgainstLights([-a[0], -a[1], -a[2]], this._lights.getLights())) {
-        //   alert('you died');
+            this.gameOver();
+            return;
+        } else {
+            const dx = Math.abs((-a[0]) - this._levels[this._levelId].target[0]);
+            const dy = Math.abs((-a[2]) - this._levels[this._levelId].target[2]);
+            if (Math.sqrt(dx * dx + dy * dy) < 0.25) {
+                this.menu();
+                return;
+            }
         }
       
         this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);

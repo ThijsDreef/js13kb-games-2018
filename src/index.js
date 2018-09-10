@@ -13,4 +13,4 @@ gl.enable(gl.DEPTH_TEST);
 gl.viewport(0, 0, canvas.width, canvas.height);
 
 const level = new Level(canvas, gl, levelData);
-level.playLevel(0);
+level.menu();
