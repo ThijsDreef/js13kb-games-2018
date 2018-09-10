@@ -23,6 +23,7 @@ class Level {
         this._model = new Matrix();
         this._controls = new Controller(canvas, this._physics);
         this._setUpGameOver();
+        this._targetBuffer = new CubeGeometry(this._gl, [[0,0,0]]);
 
         this._boundPlay = this.play.bind(this);
         this._boundPlayLevel = this.playLevel.bind(this);
@@ -39,13 +40,6 @@ class Level {
         this._controls.setPos(this._levels[id].playerPosition);
         for (let i = 0; i < this._levels[id].lights.length; i++) {
             this._lights.addLight(this._levels[id].lights[i]);
-        }
-          
-        this._pickUpBuffer = [];
-        this._pickups = [];
-        for (let i = 0; i < this._levels[0].pickups.length; i++) {
-            this._pickups.push(this._levels[0].pickups[i]);
-            this._pickUpBuffer.push(new CubeGeometry(this._gl, [[0, 0, 0]], this._levels[0].pickups[i].color));
         }
 
         this.play();
@@ -171,15 +165,13 @@ class Level {
         this.drawCubeBuffer(this._walls);
         this.drawCubeBuffer(this._ground);
       
-        for (let i = 0; i < this._pickUpBuffer.length; i++) {
-          this._model.identity();
-          this._model = this._model.translate(this._pickups[i].position);
-          this._model = this._model.scale([0.2, 0.2, 0.2]);
-          this._model = this._model.rotateY(this.time);
-          this._model = this._model.rotateX(this.time);
-          this._shader.uploadMat4(this._model.m, 'uModel');
-          this.drawCubeBuffer(this._pickUpBuffer[i]);
-        }
+        this._model.identity();
+        this._model = this._model.translate(this._levels[this._levelId].target);
+        this._model = this._model.scale([0.2, 0.2, 0.2]);
+        this._model = this._model.rotateY(this.time);
+        this._model = this._model.rotateX(this.time);
+        this._shader.uploadMat4(this._model.m, 'uModel');
+        this.drawCubeBuffer(this._targetBuffer);
 
         requestAnimationFrame(this._boundPlay);
     }
