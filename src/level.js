@@ -4,12 +4,15 @@ import Matrix from './webgl/Matrix';
 import Physics from './physics/Physics';
 import Controller from './controls/Controller';
 import Lights from './lighting/lights';
+import Background from './Background';
 
 import vert from './shaders/main.vert';
 import frag from './shaders/main.frag';
 
 class Level {
     constructor(canvas, gl, levels) {
+        gl.cullFace(gl.FRONT_AND_BACK);
+        this._background = new Background(gl,[canvas.width, canvas.height]);
         this._canvas = canvas;
         this._gl = gl;
         this._levels = levels;
@@ -108,22 +111,26 @@ class Level {
     }
 
     gameOver() {
+        this._background.startDraw();
         this._gl.clear(this._gl.COLOR_BUFFER_BIT);
         this._controls.releasePointer();
         document.body.appendChild(this._gameOver);
     }
 
     closeGameOver() {
+        this._background.stopDraw();
         document.body.removeChild(this._gameOver);
     }
 
     menu() {
+        this._background.startDraw();
         this._gl.clear(this._gl.COLOR_BUFFER_BIT);
         this._controls.releasePointer();
         document.body.appendChild(this._menu);
     }
 
     closeMenu() {
+        this._background.stopDraw();
         document.body.removeChild(this._menu);
     }
 
