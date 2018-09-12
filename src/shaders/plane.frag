@@ -1,6 +1,6 @@
 precision highp float;
 
-uniform vec2 uResolution;
+uniform vec2 uAspect;
 uniform float uTime;
 
 varying vec2 vUv;
@@ -11,13 +11,10 @@ float random (in vec2 _st) {
         43758.5453123);
 }
 
-// Based on Morgan McGuire @morgan3d
-// https://www.shadertoy.com/view/4dS3Wd
 float noise (in vec2 _st) {
     vec2 i = floor(_st);
     vec2 f = fract(_st);
 
-    // Four corners in 2D of a tile
     float a = random(i);
     float b = random(i + vec2(1.0, 0.0));
     float c = random(i + vec2(0.0, 1.0));
@@ -48,17 +45,21 @@ float fbm ( in vec2 _st) {
 }
 
 void main() {
-    vec2 st = vUv * 10.;
-    // st += st * abs(sin(uTime*0.1)*3.0);
+    vec2 st = (vUv * uAspect) * 5.;
+    
     vec3 color = vec3(0.0);
-
+	
+	vec2 u = vec2(0.);
+	u.x = fbm( st - vec2(0.5));
+    u.y = fbm( st + vec2(1.0));
+    
     vec2 q = vec2(0.);
-    q.x = fbm( st + 0.00*uTime);
-    q.y = fbm( st + vec2(1.0));
-
+    q.x = fbm( st + u + vec2(0.5, 4.5) - 0.12 * uTime);
+    q.y = fbm( st + u + vec2(3.5, 4.5) + 0.095 * uTime);
+	
     vec2 r = vec2(0.);
-    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*uTime );
-    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*uTime);
+    r.x = fbm( st + q + vec2(1.7,9.2) + 0.15*uTime );
+    r.y = fbm( st + q + vec2(8.3,2.8) - 0.126*uTime);
 
     float f = fbm(st+r);
 
@@ -74,5 +75,10 @@ void main() {
                 vec3(0.666667,1,1),
                 clamp(length(r.x),0.0,1.0));
 
-    gl_FragColor = vec4(vec3(f),1.);
+    gl_FragColor = vec4(vec3(f*f) * 1.5,1.);
+    gl_FragColor.x *= length(r) * q.y;
+    gl_FragColor.y *= r.x * q.y;
+    gl_FragColor.z *= r.x * q.y;
+    gl_FragColor *= 2.;
+    gl_FragColor.w = 1.;
 }

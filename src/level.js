@@ -21,7 +21,7 @@ class Level {
         this._fluctateRange = 0.05;
         this._range = 0.7;
         this._p = new Matrix();
-        this._p.perspective(45, window.innerWidth / window.innerHeight, 0.01, 100);
+        this._p.perspective(45, window.innerWidth / window.innerHeight, 0.0001, 100);
         this._matrix = new Matrix();
         this._model = new Matrix();
         this._controls = new Controller(canvas, this._physics);

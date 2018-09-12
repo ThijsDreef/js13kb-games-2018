@@ -20,7 +20,7 @@ class Controller {
 
   _dpadHandler(e) {
     let x = e.clientX / this._controlHeight;
-    let y = (e.clientY - this._controlHeight) / this._controlHeight;
+    let y = (e.clientY - this._topOffset) / this._controlHeight;
     x = Math.min(x, 1);
     y = Math.max(y, 0);
     x -= 0.5;
@@ -173,11 +173,11 @@ class Controller {
       this._mobileControls = document.querySelector('.control');
       this._mobileControls.style.position = 'absolute';
       this._mobileControls.style.backgroundColor = 'orange';
-      this._topOffset = (window.innerHeight / 2);
-      this._controlHeight = window.innerHeight / 2;
+      this._controlHeight = Math.min(window.innerHeight / 2, 175);
+      this._topOffset = canvas.height - this._controlHeight;
       this._mobileControls.style.top = this._topOffset + 'px';
-      this._mobileControls.style.width = (window.innerHeight / 2) + 'px';
-      this._mobileControls.style.height = (window.innerHeight / 2) + 'px';
+      this._mobileControls.style.width = (this._controlHeight) + 'px';
+      this._mobileControls.style.height = (this._controlHeight) + 'px';
     }
   }
 
