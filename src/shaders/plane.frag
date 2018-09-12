@@ -33,7 +33,6 @@ float fbm ( in vec2 _st) {
     float v = 0.0;
     float a = 0.5;
     vec2 shift = vec2(100.0);
-    // Rotate to reduce axial bias
     mat2 rot = mat2(cos(0.5), sin(0.5),
                     -sin(0.5), cos(0.50));
     for (int i = 0; i < NUM_OCTAVES; ++i) {
@@ -46,8 +45,6 @@ float fbm ( in vec2 _st) {
 
 void main() {
     vec2 st = (vUv * uAspect) * 5.;
-    
-    vec3 color = vec3(0.0);
 	
 	vec2 u = vec2(0.);
 	u.x = fbm( st - vec2(0.5));
@@ -63,22 +60,10 @@ void main() {
 
     float f = fbm(st+r);
 
-    color = mix(vec3(0.101961,0.619608,0.666667),
-                vec3(0.666667,0.666667,0.498039),
-                clamp((f*f)*4.0,0.0,1.0));
-
-    color = mix(color,
-                vec3(0,0,0.164706),
-                clamp(length(q),0.0,1.0));
-
-    color = mix(color,
-                vec3(0.666667,1,1),
-                clamp(length(r.x),0.0,1.0));
-
     gl_FragColor = vec4(vec3(f*f) * 1.5,1.);
-    gl_FragColor.x *= length(r) * q.y;
-    gl_FragColor.y *= r.x * q.y;
-    gl_FragColor.z *= r.x * q.y;
+    gl_FragColor.x *= length(r);
+    gl_FragColor.y *= length(q);
+    gl_FragColor.z *= length(u);
     gl_FragColor *= 2.;
     gl_FragColor.w = 1.;
 }

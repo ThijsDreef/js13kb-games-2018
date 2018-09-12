@@ -8,10 +8,12 @@ import Background from './Background';
 
 import vert from './shaders/main.vert';
 import frag from './shaders/main.frag';
+import Music from './music';
 
 class Level {
     constructor(canvas, gl, levels) {
         gl.cullFace(gl.FRONT_AND_BACK);
+        this._music = new Music();
         this._background = new Background(gl,[canvas.width, canvas.height]);
         this._canvas = canvas;
         this._gl = gl;
@@ -19,7 +21,7 @@ class Level {
         this._physics = new Physics();
         this.time = 0;
         this._fluctateRange = 0.05;
-        this._range = 0.7;
+        this._range = 0.55;
         this._p = new Matrix();
         this._p.perspective(45, window.innerWidth / window.innerHeight, 0.0001, 100);
         this._matrix = new Matrix();
@@ -35,7 +37,9 @@ class Level {
 
     playLevel(id) {
         this._levelId = id;
-        this._shader = new Shader(this._gl, frag.replace(new RegExp('NR_OF_LIGHTS', 'g'), this._levels[0].lights.length), vert, {attribs: ['aPosition', 'aColor'], uniforms: ['fluctate', 'uModel','range', 'uCamera', 'cameraPos', 'lightPositions', 'lightColors']});
+        this._music.speed = 1.25 - 0.5 * id / this._levels.length;
+        this._startTime = new Date().getTime();
+        this._shader = new Shader(this._gl, frag.replace(new RegExp('NR_OF_LIGHTS', 'g'), this._levels[this._levelId].lights.length), vert, {attribs: ['aPosition', 'aColor'], uniforms: ['fluctate', 'uModel','range', 'uCamera', 'cameraPos', 'lightPositions', 'lightColors', 'uTime']});
         this._lights = new Lights(this._shader);
         this._positions = this._physics.loadTerrain(this._levels[id]);
         this._walls = new CubeGeometry(this._gl, this._positions.wall);
@@ -123,6 +127,7 @@ class Level {
     }
 
     menu() {
+        this._music.speed = 1.25;
         this._background.startDraw();
         this._gl.clear(this._gl.COLOR_BUFFER_BIT);
         this._controls.releasePointer();
@@ -152,7 +157,9 @@ class Level {
             const dx = Math.abs((-a[0]) - this._levels[this._levelId].target[0]);
             const dy = Math.abs((-a[2]) - this._levels[this._levelId].target[2]);
             if (Math.sqrt(dx * dx + dy * dy) < 0.25) {
-                this.menu();
+                this._levelId++;
+                if (this._levelId >= this._levels.length) this.menu();
+                else this.playLevel(this._levelId);
                 return;
             }
         }
@@ -163,6 +170,7 @@ class Level {
         this._shader.bind();
         this._shader.uploadMat4(this._matrix.m,'uCamera');
         this._shader.uploadMat4(this._model.m, 'uModel');
+        this._shader.uploadFloat((this._startTime - new Date().getTime()) * 0.001, 'uTime');
       
         this._shader.uploadVec3([-a[0], -a[1] + 0.5, -a[2]], 'cameraPos');
         this._shader.uploadFloat(this._range + fluctate, 'range');
